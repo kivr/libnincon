@@ -13,32 +13,54 @@ static void fillReport(bool *data, ControllerReport *controllerReport)
 
     // C up and down
     controllerReport->cy_axis = NIN_getAxisValue(&data[40]);
-	
-	// L trigger
+    
+    // L trigger
     controllerReport->l_axis = NIN_getAxisValue(&data[48]);
-	
-	// R trigger
+    
+    // R trigger
     controllerReport->r_axis = NIN_getAxisValue(&data[56]);
 
-	// Buttons
+    // Buttons
     controllerReport->up = data[12];
-	controllerReport->down = data[13];
-	controllerReport->left = data[15];
-	controllerReport->right = data[14];
-	
-	controllerReport->start = data[3];
-	
+    controllerReport->down = data[13];
+    controllerReport->left = data[15];
+    controllerReport->right = data[14];
+    
+    controllerReport->start = data[3];
+    
     controllerReport->a = data[7];
-	controllerReport->b = data[6];
-	controllerReport->x = data[5];
-	controllerReport->y = data[4];
-	controllerReport->z = data[11];
-	
-	controllerReport->l = data[9];
-	controllerReport->r = data[10];
+    controllerReport->b = data[6];
+    controllerReport->x = data[5];
+    controllerReport->y = data[4];
+    controllerReport->z = data[11];
+    
+    controllerReport->l = data[9];
+    controllerReport->r = data[10];
 }
 
-bool NIN_GC_requestControllerReport(ControllerReport *controllerReport)
+static bool validate(bool *data, ControllerType type)
+{
+	bool valid = false;
+	
+	if (type == GC_TYPE)
+	{
+		valid = data[0] == false
+                    && data[1] == false
+					&& data[2] == false
+					&& data[8] == true;
+	}
+	else if (type == GC_WB_TYPE)
+	{
+		valid = data[0] == false
+                    && data[1] == false
+					&& data[2] == true
+					&& data[8] == false;
+	}
+	
+    return valid;
+}
+
+bool NIN_GC_requestControllerReport(ControllerReport *controllerReport, ControllerType type)
 {
     bool valid;
     unsigned int bitsRead;
@@ -86,7 +108,7 @@ bool NIN_GC_requestControllerReport(ControllerReport *controllerReport)
     
     bitsRead = NIN_parseData(data, GC_RESPONSE_LENGTH, samples);
     
-    valid = (bitsRead == GC_RESPONSE_LENGTH);
+    valid = (bitsRead == GC_RESPONSE_LENGTH && validate(data, type));
     
     if (valid)
     {

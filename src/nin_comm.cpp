@@ -136,7 +136,7 @@ ControllerType NIN_identifyController(bool *id)
         }
 		else if (memcmp(gc_wavebird_id, data, sizeof(bool) * ID_LENGTH) == 0)
         {
-            retValue = GC_TYPE;
+            retValue = GC_WB_TYPE;
         }
         else if (memcmp(n64_id, data, sizeof(bool) * ID_LENGTH) == 0)
         {
@@ -160,9 +160,9 @@ bool NIN_requestControllerReport(ControllerReport *controllerReport, ControllerT
 	{
 		retValue = NIN_N64_requestControllerReport(controllerReport);
 	}
-	else if (type == GC_TYPE)
+	else if (type == GC_TYPE || type == GC_WB_TYPE)
 	{
-		retValue = NIN_GC_requestControllerReport(controllerReport);
+		retValue = NIN_GC_requestControllerReport(controllerReport, type);
 	}
 	
 	return retValue;

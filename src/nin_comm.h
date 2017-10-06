@@ -62,6 +62,7 @@ typedef enum _ControllerType
     INVALID_TYPE = 0,
     N64_TYPE,
     GC_TYPE,
+	GC_WB_TYPE,
 	UNKNOWN_TYPE,
     LAST_TYPE
 } ControllerType;
