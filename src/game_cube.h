@@ -5,6 +5,6 @@
 
 #define GC_RESPONSE_LENGTH 64
 
-bool NIN_GC_requestControllerReport(ControllerReport *controllerReport);
+bool NIN_GC_requestControllerReport(ControllerReport *controllerReport, ControllerType type);
 
 #endif /* _GAME_CUBE_H_ */

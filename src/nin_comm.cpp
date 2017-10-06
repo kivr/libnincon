@@ -125,8 +125,8 @@ ControllerType NIN_identifyController(bool *id)
     SAMPLE_DATA(samples);
 
     bitsRead = NIN_parseData(data, ID_MESSAGE_LENGTH, samples);
-	
-	int i;
+    
+    int i;
 
     if (bitsRead == ID_MESSAGE_LENGTH)
     {
@@ -134,19 +134,19 @@ ControllerType NIN_identifyController(bool *id)
         {
             retValue = GC_TYPE;
         }
-		else if (memcmp(gc_wavebird_id, data, sizeof(bool) * ID_LENGTH) == 0)
+        else if (memcmp(gc_wavebird_id, data, sizeof(bool) * ID_LENGTH) == 0)
         {
-            retValue = GC_TYPE;
+            retValue = GC_WB_TYPE;
         }
         else if (memcmp(n64_id, data, sizeof(bool) * ID_LENGTH) == 0)
         {
             retValue = N64_TYPE;
         }
-		else if (id != NULL)
-		{
-			memcpy(id, data, ID_LENGTH);
-			retValue = UNKNOWN_TYPE;
-		}
+        else if (id != NULL)
+        {
+            memcpy(id, data, ID_LENGTH);
+            retValue = UNKNOWN_TYPE;
+        }
     }
     
     return retValue;
@@ -154,16 +154,16 @@ ControllerType NIN_identifyController(bool *id)
 
 bool NIN_requestControllerReport(ControllerReport *controllerReport, ControllerType type)
 {
-	bool retValue = false;
-	
-	if (type == N64_TYPE)
-	{
-		retValue = NIN_N64_requestControllerReport(controllerReport);
-	}
-	else if (type == GC_TYPE)
-	{
-		retValue = NIN_GC_requestControllerReport(controllerReport);
-	}
-	
-	return retValue;
+    bool retValue = false;
+    
+    if (type == N64_TYPE)
+    {
+        retValue = NIN_N64_requestControllerReport(controllerReport);
+    }
+    else if (type == GC_TYPE || type == GC_WB_TYPE)
+    {
+        retValue = NIN_GC_requestControllerReport(controllerReport, type);
+    }
+    
+    return retValue;
 }

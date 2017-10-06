@@ -62,41 +62,42 @@ typedef enum _ControllerType
     INVALID_TYPE = 0,
     N64_TYPE,
     GC_TYPE,
-	UNKNOWN_TYPE,
+    GC_WB_TYPE,
+    UNKNOWN_TYPE,
     LAST_TYPE
 } ControllerType;
 
 typedef struct _ControllerReport
 {
-	bool up;
-	bool down;
-	bool left;
-	bool right;
-	
-	bool start;
-	
-	bool a;
-	bool b;
-	bool x;
-	bool y;
-	bool z;
-	
-	bool c_up;
-	bool c_down;
-	bool c_left;
-	bool c_right;
-	
-	bool l;
-	bool r;
-	
-	uint8_t jx_axis;
-	uint8_t jy_axis;
-	
-	uint8_t cx_axis;
-	uint8_t cy_axis;
-	
-	uint8_t l_axis;
-	uint8_t r_axis;
+    bool up;
+    bool down;
+    bool left;
+    bool right;
+    
+    bool start;
+    
+    bool a;
+    bool b;
+    bool x;
+    bool y;
+    bool z;
+    
+    bool c_up;
+    bool c_down;
+    bool c_left;
+    bool c_right;
+    
+    bool l;
+    bool r;
+    
+    uint8_t jx_axis;
+    uint8_t jy_axis;
+    
+    uint8_t cx_axis;
+    uint8_t cy_axis;
+    
+    uint8_t l_axis;
+    uint8_t r_axis;
 } ControllerReport;
 
 extern const char* NIN_controllerNames[LAST_TYPE];
