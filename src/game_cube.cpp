@@ -40,23 +40,23 @@ static void fillReport(bool *data, ControllerReport *controllerReport)
 
 static bool validate(bool *data, ControllerType type)
 {
-	bool valid = false;
-	
-	if (type == GC_TYPE)
-	{
-		valid = data[0] == false
+    bool valid = false;
+    
+    if (type == GC_TYPE)
+    {
+        valid = data[0] == false
                     && data[1] == false
-					&& data[2] == false
-					&& data[8] == true;
-	}
-	else if (type == GC_WB_TYPE)
-	{
-		valid = data[0] == false
+                    && data[2] == false
+                    && data[8] == true;
+    }
+    else if (type == GC_WB_TYPE)
+    {
+        valid = data[0] == false
                     && data[1] == false
-					&& data[2] == true
-					&& data[8] == false;
-	}
-	
+                    && data[2] == true
+                    && data[8] == false;
+    }
+    
     return valid;
 }
 
