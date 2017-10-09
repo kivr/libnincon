@@ -15,8 +15,8 @@
             "nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n" \
             "nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n" \
             "nop\nnop\nnop\nnop\nnop\nnop\nnop\n")
-	
-#define DATA_SAMPLE_TYPE uint8_t	
+    
+#define DATA_SAMPLE_TYPE uint8_t    
 #define DATA_PORT_TYPE volatile DATA_SAMPLE_TYPE
 
 #define START_TRANSMISSION *ddrAddress |= g_dataPortMask;
@@ -26,11 +26,12 @@
 
 #define SAMPLE_DATA(VAR) \
 {\
-    DATA_SAMPLE_TYPE *s = VAR; \
-	while (s - VAR < BUF_SIZE) \
-	{ \
+    register DATA_SAMPLE_TYPE *s = VAR; \
+    register DATA_SAMPLE_TYPE *limit = VAR + BUF_SIZE; \
+    while (s < limit) \
+    { \
         *s++ = *g_inDataPortAddress; \
-	} \
+    } \
 }
 
 extern volatile uint8_t *ddrAddress;
