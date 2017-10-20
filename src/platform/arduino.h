@@ -28,10 +28,10 @@
 {\
     register DATA_SAMPLE_TYPE *s = VAR; \
     register DATA_SAMPLE_TYPE *limit = VAR + BUF_SIZE; \
-    while (s < limit) \
+    do \
     { \
         *s++ = *g_inDataPortAddress; \
-    } \
+    } while (s < limit); \
 }
 
 extern volatile uint8_t *ddrAddress;

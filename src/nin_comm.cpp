@@ -65,7 +65,7 @@ unsigned int NIN_parseData(bool *data, int dataLength, DATA_SAMPLE_TYPE *samples
     prev = i;
     j = 0;
 
-    while ((i - prev) < (2 * mindiff) && i < BUF_SIZE) {
+    while ((i - prev) < (2 * mindiff) && j < dataLength && i < BUF_SIZE) {
         i++;
         /* detect consecutive falling edges */
         if ((samples[i-1] & g_dataPortMask) && !(samples[i] & g_dataPortMask)) {
@@ -86,8 +86,19 @@ unsigned int NIN_parseData(bool *data, int dataLength, DATA_SAMPLE_TYPE *samples
             prev = i;
         }
     }
+    
+    // Check that threre are not additional falling edges in the samples
+    for (i = prev + 1; i < BUF_SIZE; i++)
+    {
+        /* detect consecutive falling edges */
+        if ((samples[i-1] & g_dataPortMask) && !(samples[i] & g_dataPortMask))
+        {
+            // Mark data as invalid
+            j = 0;
+        }
+    }
 
-    return (maxdiff < 2 * mindiff) ? j : 0;
+    return (maxdiff <= (mindiff + mindiff / 5)) ? j : 0;
 }
 
 ControllerType NIN_identifyController(bool *id)

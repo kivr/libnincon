@@ -113,6 +113,17 @@ bool NIN_GC_requestControllerReport(ControllerReport *controllerReport, Controll
     if (valid)
     {
         fillReport(data, controllerReport);
+        
+        // If one of the axis has 0 likely is an invalid report
+        if (controllerReport->jx_axis == 0
+                || controllerReport->jy_axis == 0
+                || controllerReport->cx_axis == 0
+                || controllerReport->cy_axis == 0
+                || controllerReport->l_axis == 0
+                || controllerReport->r_axis == 0)
+        {
+            valid = false;          
+        }
     }
     
     return valid;
