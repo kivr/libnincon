@@ -2,9 +2,11 @@
 #include <fcntl.h> 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 
 #define MSG_SIZE 36
 
@@ -17,24 +19,12 @@ int set_interface_attribs(int fd, int speed)
         return -1;
     }
 
+    cfmakeraw(&tty);
+
     cfsetospeed(&tty, (speed_t)speed);
     cfsetispeed(&tty, (speed_t)speed);
 
-    tty.c_cflag |= (CLOCAL | CREAD);    /* ignore modem controls */
-    tty.c_cflag &= ~CSIZE;
-    tty.c_cflag |= CS8;         /* 8-bit characters */
-    tty.c_cflag &= ~PARENB;     /* no parity bit */
-    tty.c_cflag &= ~CSTOPB;     /* only need 1 stop bit */
-    tty.c_cflag &= ~CRTSCTS;    /* no hardware flowcontrol */
-
-    /* setup for non-canonical mode */
-    tty.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL |
- IXON);
-    tty.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
-    tty.c_oflag &= ~OPOST;
-
-    /* fetch bytes as they become available */
-    tty.c_cc[VMIN] = 1;
+    tty.c_cc[VMIN] = 0;
     tty.c_cc[VTIME] = 1;
 
     if (tcsetattr(fd, TCSANOW, &tty) != 0) {
@@ -70,7 +60,7 @@ int connect(const char *portname)
     int fd = -1;
     while (fd < 0)
     {
-	fd = open(portname, O_RDONLY);
+	fd = open(portname, O_RDONLY | O_NOCTTY);
 	if (fd < 0) {
 	    printf("Error opening %s: %s\n", portname, strerror(errno));
 	    sleep(5);
@@ -89,6 +79,9 @@ int main(int argc, char *argv[])
     unsigned char buf[2 * MSG_SIZE];
     unsigned char *pBuf = buf;
 
+    bool starting = true;
+    unsigned int emptyCount = 0;
+
     if (argc != 2)
     {
 	    printf("Error on number of program arguments %d\n", argc);
@@ -104,6 +97,9 @@ int main(int argc, char *argv[])
         rdlen = read(fd, pBuf, sizeof(buf) - (pBuf - buf) - 1);
         if (rdlen > 0) {
 	    unsigned char *firstBreak = strchr(buf, '\n');
+
+	    starting = false;
+	    emptyCount = 0;
 
             pBuf[rdlen] = 0;
 	    pBuf += rdlen;
@@ -121,13 +117,34 @@ int main(int argc, char *argv[])
 	    memmove(buf, firstBreak + 1, (pBuf - firstBreak));
 	    pBuf = strchr(buf, '\0');
 	    memset(pBuf, 0, sizeof(buf) - (pBuf - buf));
-        } else if (rdlen < 0) {
+        }
+	else if (rdlen < 0 || emptyCount > 2)
+	{
+	    int flags;
             printf("Error from read: %d: %s\n", rdlen, strerror(errno));
+	    
 	    close(fd);
+
+	    starting = true;
+	    emptyCount = 0;
 
 	    // Try to reconnect
 	    fd = connect(argv[1]);
+	    
+	    flags = TIOCM_DTR;
+            ioctl(fd, TIOCMBIC, &flags);
+            flags = TIOCM_DTR;
+            ioctl(fd, TIOCMBIS, &flags);
         }
+	else // rdlen == 0
+	{
+            if (starting)
+	    {
+            	sleep(1);
+	    }
+
+	    emptyCount++;
+	}
         /* repeat read to get full message */
     } while (1);
 }

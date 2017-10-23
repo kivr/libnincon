@@ -57,9 +57,10 @@ static struct input_dev * new_input_device(void)
 
 	for (i = 0; i < 2; i++)
 	{
-	    input_set_abs_params(input_dev, ABS_X + i, FIX, 255 - FIX, 4, 15);
-	    input_set_abs_params(input_dev, ABS_RX + i, FIX, 255 - FIX, 4, 15);
-	    input_set_abs_params(input_dev, ABS_GAS + i, -128, 128, 4, 40);
+	    input_set_abs_params(input_dev, ABS_X + i, FIX, 255 - FIX, 0, 15);
+	    input_set_abs_params(input_dev, ABS_RX + i, FIX, 255 - FIX, 0, 15);
+	    input_set_abs_params(input_dev, ABS_GAS + i,
+			    -255 + FIX, 255 - FIX, 0, 40);
 	    input_set_abs_params(input_dev, ABS_HAT0X + i, -1, 1, 0, 0);
 	}
 
